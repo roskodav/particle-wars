@@ -27,11 +27,18 @@ public class Particle : MonoBehaviour
 
     private SpriteRenderer rend;
 
+    public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner)
+    {
+        var particle = Instantiate(particlePrefab, position, new Quaternion(0, 0, 0, 0));
+        particle.transform.parent = parent;
+        var particleComponent = particle.GetComponent<global::Particle>();
+        particleComponent.Owner = owner;
+        particle.name = name;
+    }
 
     private void OnDrawGizmos()
     {
-       
-            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, influenceRadius);
+        UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, influenceRadius);
     }
 
     // Start is called before the first frame update
@@ -44,7 +51,7 @@ public class Particle : MonoBehaviour
         InvokeRepeating(nameof(ApplyInfluence), 1f, 1f);
         InvokeRepeating(nameof(CheckInfluence), Random.value,0.5f);
 
-        ChangePlayer(GameManager.Instance.Players[Random.Range(0, GameManager.Instance.Players.Count)]);
+        //ChangePlayer(GameManager.Instance.Players[Random.Range(0, GameManager.Instance.Players.Count)]);
 
         if (Owner != null)
             ChangePlayer(Owner);
@@ -82,8 +89,6 @@ public class Particle : MonoBehaviour
         rend.color = targetPlayer.Color;
         Life = MaxLife / 2;
     }
-
-
 
     private void AddInfluence(Particle enemyParticle)
     {
