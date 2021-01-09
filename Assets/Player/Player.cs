@@ -36,5 +36,10 @@ namespace Assets.Player
                 return false;
             return ID == ((Player) obj).ID;
         }
+
+        public override int GetHashCode()
+        {
+            return this.ID.GetHashCode();
+        }
     }
 }
