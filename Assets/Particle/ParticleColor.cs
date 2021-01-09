@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Particle
 {
@@ -11,21 +6,22 @@ namespace Assets.Particle
     [RequireComponent(typeof(SpriteRenderer))]
     public class ParticleColor : MonoBehaviour
     {
-        private global::Particle particle;
-        private SpriteRenderer rend;
-        void Start()
+        private global::Particle _particle;
+        private SpriteRenderer _rend;
+
+        private void Start()
         {
-            particle = GetComponent<global::Particle>();
-            rend = GetComponent<SpriteRenderer>();
+            _particle = GetComponent<global::Particle>();
+            _rend = GetComponent<SpriteRenderer>();
         }
 
-        void UpdateColor()
+        private void UpdateColor()
         {
-            if(particle.Owner != null && rend.color != particle.Owner.Color)
-                rend.color = particle.Owner.Color;
+            if (_particle.Owner != null && _rend.color != _particle.Owner.Color)
+                _rend.color = _particle.Owner.Color;
         }
 
-        void Update()
+        private void Update()
         {
             UpdateColor();
         }

@@ -277,6 +277,63 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
+--- !u!1001 &410477230
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.487049
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.751554
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832244873, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6408878791832531461, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+      propertyPath: m_Name
+      value: Particle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
 --- !u!1 &607943723
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,11 +444,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee53b168dbdf3e4981df0512e3fbbef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: Player2
   Color: {r: 0, g: 0.13798308, b: 1, a: 1}
   ID: 1
-  PlayerControl: {fileID: 2726743689001414347, guid: 7e6548b01aa6e3845af76179af9cb10c, type: 3}
   isLocalPlayer: 0
+  PlayerControl: {fileID: 2726743689001414347, guid: 7e6548b01aa6e3845af76179af9cb10c, type: 3}
+  PlayerName: 
 --- !u!114 &616223158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,11 +461,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a2d73ac68bba884b9e1bd12feeaff84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 616223157}
-  MaxSpawnCount: 100
   CurrentCount: 0
-  SpawnRadius: 1
+  MaxSpawnCount: 100
   ParticleObj: {fileID: 6408878791832531461, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+  Player: {fileID: 616223157}
+  SpawnRadius: 1
 --- !u!84 &661845555
 RenderTexture:
   m_ObjectHideFlags: 0
@@ -473,7 +530,7 @@ Transform:
   m_Children:
   - {fileID: 100847947}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1181392609
 GameObject:
@@ -504,7 +561,7 @@ Transform:
   m_Children:
   - {fileID: 607943726}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1481772224
 GameObject:
@@ -550,11 +607,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ee53b168dbdf3e4981df0512e3fbbef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: Player1
   Color: {r: 0.8396226, g: 0, b: 0.66140085, a: 1}
   ID: 0
-  PlayerControl: {fileID: 2726743689001414347, guid: 7e6548b01aa6e3845af76179af9cb10c, type: 3}
   isLocalPlayer: 1
+  PlayerControl: {fileID: 2726743689001414347, guid: 7e6548b01aa6e3845af76179af9cb10c, type: 3}
+  PlayerName: 
 --- !u!114 &1481772227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,11 +624,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a2d73ac68bba884b9e1bd12feeaff84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 1481772226}
-  MaxSpawnCount: 100
   CurrentCount: 0
-  SpawnRadius: 1
+  MaxSpawnCount: 100
   ParticleObj: {fileID: 6408878791832531461, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
+  Player: {fileID: 1481772226}
+  SpawnRadius: 1
 --- !u!84 &1563880868
 RenderTexture:
   m_ObjectHideFlags: 0
@@ -637,7 +694,7 @@ Transform:
   - {fileID: 1481772225}
   - {fileID: 616223156}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!850595691 &1770213327
 LightingSettings:

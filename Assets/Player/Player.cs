@@ -8,9 +8,9 @@ namespace Assets.Player
         public int ID;
 
         [SerializeField] private bool isLocalPlayer;
+        public GameObject PlayerControl;
 
         public string PlayerName;
-        public GameObject PlayerControl;
 
         public bool IsLocalPlayer
         {
@@ -21,7 +21,7 @@ namespace Assets.Player
 
         private void Start()
         {
-            this.name = $"Player {PlayerName}";
+            name = $"Player {PlayerName}";
             var playerControl = Instantiate(PlayerControl, transform);
             playerControl.GetComponent<PlayerControl>().Player = this;
             if (isLocalPlayer)

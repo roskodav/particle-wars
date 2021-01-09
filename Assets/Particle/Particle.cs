@@ -8,27 +8,27 @@ using UnityEngine;
 
 public class Particle : MonoBehaviour
 {
+    private float _currentControledTime;
     public float ControledInfluenceBonus = 1.2f;
     public float ControledInfluenceBonusLifeTime = 0.5f;
-    public bool IsControlledByMouse;
-    
-    private float CurrentControledTime;
-    
+
     /// <summary>
-    /// Current power to influence other cells
+    ///     Current power to influence other cells
     /// </summary>
     public float CurrentInfluencePower;
+
+    public float DefaultInfluencePower = 1;
 
     /// <summary>
     ///     Points per update
     /// </summary>
     public float HealingSpeed = 1;
 
-    public float DefaultInfluencePower = 1;
     public float InfluenceRadius = 1;
+    public bool IsControlledByMouse;
     public float Life = 100;
     public float MaxLife = 100;
-    
+
     public Player Owner;
 
     /// <summary>
@@ -39,13 +39,13 @@ public class Particle : MonoBehaviour
     public void SetControlled()
     {
         IsControlledByMouse = true;
-        CurrentControledTime = 0;
+        _currentControledTime = 0;
     }
 
     public void RemoveInfluenceBonus()
     {
         IsControlledByMouse = false;
-        CurrentControledTime = 0;
+        _currentControledTime = 0;
     }
 
     public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner)
@@ -64,8 +64,8 @@ public class Particle : MonoBehaviour
 
     private void Update()
     {
-        CurrentControledTime += Time.deltaTime;
-        if (IsControlledByMouse && CurrentControledTime > ControledInfluenceBonusLifeTime)
+        _currentControledTime += Time.deltaTime;
+        if (IsControlledByMouse && _currentControledTime > ControledInfluenceBonusLifeTime)
             RemoveInfluenceBonus();
 
         CurrentInfluencePower = DefaultInfluencePower * (IsControlledByMouse ? ControledInfluenceBonus : 1);
@@ -117,7 +117,7 @@ public class Particle : MonoBehaviour
     public void ApplyInfluence()
     {
         var totalInfluence = PlayersInfluence
-            .Sum(p => 
+            .Sum(p =>
                 p.Value.Player.Equals(Owner) ? -p.Value.Influence : +p.Value.Influence);
 
         Life += totalInfluence;
@@ -134,7 +134,7 @@ public class Particle : MonoBehaviour
             ChangePlayer(topEnemyInfluencer.Player);
         }
 
-        foreach (var playerInfluence in PlayersInfluence) 
+        foreach (var playerInfluence in PlayersInfluence)
             playerInfluence.Value.Influence = 0;
     }
 
