@@ -64,12 +64,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Healing: 1
-  InfluencePower: 20.62
+  InfluencePower: 88.4
+  CurrentInfluencePower: 0
   Life: 100
   MaxLife: 100
   Owner: {fileID: 0}
   EnableDebug: 0
   influenceRadius: 0.5
+  Controlled: 0
+  CurrentControledTime: 0
+  ControledInfluenceBonusLifeTime: 0.5
+  ControledInfluenceBonus: 1.2
 --- !u!212 &6408878791819607639
 SpriteRenderer:
   m_ObjectHideFlags: 0

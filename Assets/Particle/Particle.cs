@@ -15,17 +15,35 @@ public class Particle : MonoBehaviour
     /// </summary>
     public float Healing = 1;
     public float InfluencePower = 1;
+    public float CurrentInfluencePower = 0;
     public float Life = 100;
     public float MaxLife = 100;
     public Player Owner;
     public bool EnableDebug = false;
     public float influenceRadius = 1;
+    public bool Controlled = false;
+    public float CurrentControledTime = 0;
+    public float ControledInfluenceBonusLifeTime = 0.5f;
+    public float ControledInfluenceBonus = 1.2f;
+    
     /// <summary>
     ///     Used for counting witch player have influence on cell
     /// </summary>
     public Dictionary<int, PlayerInfluence> PlayersInfluence;
 
     private SpriteRenderer rend;
+
+    public void SetControlled()
+    {
+        Controlled = true;
+        CurrentControledTime = 0;
+    }
+
+    public void RemoveInfluenceBonus()
+    {
+        Controlled = false;
+        CurrentControledTime = 0;
+    }
 
     public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner)
     {
@@ -39,6 +57,15 @@ public class Particle : MonoBehaviour
     private void OnDrawGizmos()
     {
         UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, influenceRadius);
+    }
+
+    void Update()
+    {
+        CurrentControledTime += Time.deltaTime;
+        if (Controlled == true && CurrentControledTime > ControledInfluenceBonusLifeTime)
+            RemoveInfluenceBonus();
+
+        CurrentInfluencePower = InfluencePower * (Controlled ? ControledInfluenceBonus : 1);
     }
 
     // Start is called before the first frame update
@@ -95,7 +122,8 @@ public class Particle : MonoBehaviour
         if (enemyParticle.Owner == null)
             return;
 
-        PlayersInfluence[enemyParticle.Owner.ID].AddInfluence(enemyParticle.InfluencePower);
+        //Add influce bonus if controlled
+        PlayersInfluence[enemyParticle.Owner.ID].AddInfluence(enemyParticle.CurrentInfluencePower);
     }
 
     public void ApplyInfluence()
@@ -136,7 +164,7 @@ public class Particle : MonoBehaviour
 
     private void CheckInfluence()
     {
-        Debug.Log("Check influence");
+        //Debug.Log("Check influence");
 
         foreach (Collider2D collider in Physics2D.OverlapCircleAll(transform.position, influenceRadius) )
         {

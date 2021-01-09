@@ -12,6 +12,26 @@ namespace Assets.Player
         public string Name;
         public Color Color;
         public int ID;
+        public GameObject PlayerControl;
+        
+        [SerializeField]
+        private bool isLocalPlayer;
+        public bool IsLocalPlayer
+        {
+            //TODO for multiplayer
+            get { return isLocalPlayer; }
+            set { isLocalPlayer = value; }
+        }
+
+        void Start()
+        {
+            var playerControl = Instantiate(PlayerControl, transform);
+            playerControl.GetComponent<PlayerControl>().Player = this;
+            if (isLocalPlayer)
+                playerControl.gameObject.AddComponent<LocalPlayerControl>();
+            else
+                playerControl.gameObject.AddComponent<RemotePlayerControl>();
+        }
 
         public override bool Equals(System.Object obj)
         {
