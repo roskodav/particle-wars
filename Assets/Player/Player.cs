@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Player
 {
     public class Player : MonoBehaviour
     {
-        public string Name;
         public Color Color;
         public int ID;
+
+        [SerializeField] private bool isLocalPlayer;
+
+        public string PlayerName;
         public GameObject PlayerControl;
-        
-        [SerializeField]
-        private bool isLocalPlayer;
+
         public bool IsLocalPlayer
         {
             //TODO for multiplayer
-            get { return isLocalPlayer; }
-            set { isLocalPlayer = value; }
+            get => isLocalPlayer;
+            set => isLocalPlayer = value;
         }
 
-        void Start()
+        private void Start()
         {
+            this.name = $"Player {PlayerName}";
             var playerControl = Instantiate(PlayerControl, transform);
             playerControl.GetComponent<PlayerControl>().Player = this;
             if (isLocalPlayer)
@@ -33,17 +30,11 @@ namespace Assets.Player
                 playerControl.gameObject.AddComponent<RemotePlayerControl>();
         }
 
-        public override bool Equals(System.Object obj)
+        public override bool Equals(object obj)
         {
-            //Check for null and compare run-time types.
             if (obj == null || GetType() != obj.GetType())
-            {
                 return false;
-            }
-            else
-            {
-                return (ID == ((Player)obj).ID);
-            }
+            return ID == ((Player) obj).ID;
         }
     }
 }

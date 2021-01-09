@@ -45,4 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Radius: 1.95
   Player: {fileID: 0}
-  PullForce: 1500
+  PullForce: 100

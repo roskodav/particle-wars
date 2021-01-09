@@ -1,47 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Assets;
 using Assets.Particle;
 using Assets.Player;
-using Unity.Profiling;
+using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class Particle : MonoBehaviour
 {
+    public float ControledInfluenceBonus = 1.2f;
+    public float ControledInfluenceBonusLifeTime = 0.5f;
+    public bool IsControlledByMouse;
+    
+    private float CurrentControledTime;
+    
+    /// <summary>
+    /// Current power to influence other cells
+    /// </summary>
+    public float CurrentInfluencePower;
+
     /// <summary>
     ///     Points per update
     /// </summary>
-    public float Healing = 1;
-    public float InfluencePower = 1;
-    public float CurrentInfluencePower = 0;
+    public float HealingSpeed = 1;
+
+    public float DefaultInfluencePower = 1;
+    public float InfluenceRadius = 1;
     public float Life = 100;
     public float MaxLife = 100;
-    public Player Owner;
-    public bool EnableDebug = false;
-    public float influenceRadius = 1;
-    public bool Controlled = false;
-    public float CurrentControledTime = 0;
-    public float ControledInfluenceBonusLifeTime = 0.5f;
-    public float ControledInfluenceBonus = 1.2f;
     
+    public Player Owner;
+
     /// <summary>
-    ///     Used for counting witch player have influence on cell
+    ///     Used for counting witch player have most influence on this particle
     /// </summary>
     public Dictionary<int, PlayerInfluence> PlayersInfluence;
 
-    private SpriteRenderer rend;
-
     public void SetControlled()
     {
-        Controlled = true;
+        IsControlledByMouse = true;
         CurrentControledTime = 0;
     }
 
     public void RemoveInfluenceBonus()
     {
-        Controlled = false;
+        IsControlledByMouse = false;
         CurrentControledTime = 0;
     }
 
@@ -49,47 +52,42 @@ public class Particle : MonoBehaviour
     {
         var particle = Instantiate(particlePrefab, position, new Quaternion(0, 0, 0, 0));
         particle.transform.parent = parent;
-        var particleComponent = particle.GetComponent<global::Particle>();
+        var particleComponent = particle.GetComponent<Particle>();
         particleComponent.Owner = owner;
         particle.name = name;
     }
 
     private void OnDrawGizmos()
     {
-        UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, influenceRadius);
+        Handles.DrawWireDisc(transform.position, Vector3.back, InfluenceRadius);
     }
 
-    void Update()
+    private void Update()
     {
         CurrentControledTime += Time.deltaTime;
-        if (Controlled == true && CurrentControledTime > ControledInfluenceBonusLifeTime)
+        if (IsControlledByMouse && CurrentControledTime > ControledInfluenceBonusLifeTime)
             RemoveInfluenceBonus();
 
-        CurrentInfluencePower = InfluencePower * (Controlled ? ControledInfluenceBonus : 1);
+        CurrentInfluencePower = DefaultInfluencePower * (IsControlledByMouse ? ControledInfluenceBonus : 1);
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         //Cache max possible player
         PlayersInfluence = new Dictionary<int, PlayerInfluence>(GameManager.Instance.MaxPlayers);
-        rend = GetComponent<SpriteRenderer>();
         InvokeRepeating(nameof(HealingUpdate), 1f, 1f);
         InvokeRepeating(nameof(ApplyInfluence), 1f, 1f);
-        InvokeRepeating(nameof(CheckInfluence), Random.value,0.5f);
-
-        //ChangePlayer(GameManager.Instance.Players[Random.Range(0, GameManager.Instance.Players.Count)]);
+        InvokeRepeating(nameof(CheckInfluence), Random.value, 0.5f);
 
         if (Owner != null)
             ChangePlayer(Owner);
 
         foreach (var player in GameManager.Instance.Players)
-        {
-            PlayersInfluence[player.ID] = new PlayerInfluence()
+            PlayersInfluence[player.ID] = new PlayerInfluence
             {
                 Player = player
             };
-        }
     }
 
     /// <summary>
@@ -98,22 +96,12 @@ public class Particle : MonoBehaviour
     private void HealingUpdate()
     {
         if (Life < MaxLife)
-            Life += Healing;
+            Life += HealingSpeed;
     }
-
-    //void RemoveNullParticles()
-    //{
-    //    foreach (var playerInfluence in PlayersInfluence)
-    //    {
-    //        if (playerInfluence.Value == null || playerInfluence.Value.Particle == null)
-    //            PlayersInfluence.Remove(playerInfluence.Key);
-    //    }
-    //}
 
     private void ChangePlayer(Player targetPlayer)
     {
         Owner = targetPlayer;
-        rend.color = targetPlayer.Color;
         Life = MaxLife / 2;
     }
 
@@ -128,21 +116,14 @@ public class Particle : MonoBehaviour
 
     public void ApplyInfluence()
     {
-        var totalEnemyInfluence = PlayersInfluence
-            .Where(p => !p.Value.Player.Equals(Owner))
-            .Sum(p => p.Value.Influence);
+        var totalInfluence = PlayersInfluence
+            .Sum(p => 
+                p.Value.Player.Equals(Owner) ? -p.Value.Influence : +p.Value.Influence);
 
-        var totalAlliesInfluence = PlayersInfluence
-            .Where(p => p.Value.Player.Equals(Owner))
-            .Sum(p => p.Value.Influence);
-
-        Life = Life + totalAlliesInfluence - totalEnemyInfluence;
-
-        if (EnableDebug)
-            Debug.Log($"totalAlliesInfluence:{totalAlliesInfluence} totalEnemyInfluence:{totalEnemyInfluence} life:{Life}");
-
+        Life += totalInfluence;
         Life = Mathf.Clamp(Life, 0, MaxLife);
-        if (Life == 0)
+
+        if (Life <= 0)
         {
             var topEnemyInfluencer = PlayersInfluence
                 .Select(p => p.Value)
@@ -151,117 +132,18 @@ public class Particle : MonoBehaviour
                 .FirstOrDefault();
 
             ChangePlayer(topEnemyInfluencer.Player);
-
-            if (EnableDebug)
-                Debug.Log("Change player");
         }
 
-        foreach (var playerInfluence in PlayersInfluence)
-        {
+        foreach (var playerInfluence in PlayersInfluence) 
             playerInfluence.Value.Influence = 0;
-        }
     }
 
     private void CheckInfluence()
     {
-        //Debug.Log("Check influence");
-
-        foreach (Collider2D collider in Physics2D.OverlapCircleAll(transform.position, influenceRadius) )
+        foreach (var coll in Physics2D.OverlapCircleAll(transform.position, InfluenceRadius))
         {
-            var particle = collider.gameObject.GetComponent<Particle>();
-            if (particle != null)
-            {
-                AddInfluence(particle);
-            }
+            var particle = coll.gameObject.GetComponent<Particle>();
+            if (particle != null) AddInfluence(particle);
         }
     }
-
-    //private void AddInfluence(Particle enemyParticle)
-    //{
-    //    if(enemyParticle.Owner == null)
-    //        return;
-
-    //    if (!PlayersInfluence.ContainsKey(enemyParticle.Owner.ID))
-    //        PlayersInfluence[enemyParticle.Owner.ID] = new PlayerInfluence()
-    //        {
-    //            Particle = enemyParticle
-    //        };
-
-    //    PlayersInfluence[enemyParticle.Owner.ID].AddInfluence(enemyParticle.InfluencePower);
-    //}
-
-    //private void RemoveInfluence(Particle enemyParticle)
-    //{
-    //    if (enemyParticle.Owner == null)
-    //        return;
-
-    //    if (!PlayersInfluence.ContainsKey(enemyParticle.Owner.ID))
-    //        PlayersInfluence[enemyParticle.Owner.ID] = new PlayerInfluence()
-    //        {
-    //            Particle = enemyParticle
-    //        };
-
-    //    PlayersInfluence[enemyParticle.Owner.ID].RemoveInfluence(enemyParticle.InfluencePower);
-    //}
-
-    //public void ApplyInfluence()
-    //{
-
-    //    var totalEnemyInfluence = PlayersInfluence
-    //        .Where(p => !p.Value.Player.Equals(Owner))
-    //        .Sum(p => p.Value.Influence);
-
-    //    var totalAlliesInfluence = PlayersInfluence
-    //        .Where(p => p.Value.Player.Equals(Owner))
-    //        .Sum(p => p.Value.Influence);
-
-    //    Life = Life + totalAlliesInfluence - totalEnemyInfluence;
-
-    //    if (EnableDebug)
-    //        Debug.Log($"totalAlliesInfluence:{totalAlliesInfluence} totalEnemyInfluence:{totalEnemyInfluence} life:{Life}");
-
-
-    //    Life = Mathf.Clamp(Life, 0, MaxLife);
-    //    if (Life == 0)
-    //    {
-    //        var topEnemyInfluencer = PlayersInfluence
-    //            .Select(p => p.Value)
-    //            .Where(p => !p.Player.Equals(Owner))
-    //            .OrderByDescending(p => p.Influence)
-    //            .FirstOrDefault();
-
-    //        ChangePlayer(topEnemyInfluencer.Player);
-
-    //        if (EnableDebug)
-    //            Debug.Log("Change player");
-    //    }
-    //}
-
-    //When the Primitive collides with the walls, it will reverse direction
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (EnableDebug)
-    //        Debug.Log("Enter colision");
-
-    //    var particle = collision.gameObject.GetComponent<Particle>();
-
-    //    if (particle != null)
-    //    {
-    //        AddInfluence(particle);
-    //    }
-    //}
-
-    //private void OnTriggerExit2D(Collider2D collision)
-    //{
-    //    if (EnableDebug)
-    //        Debug.Log("Exit colision");
-
-    //    var particle = collision.gameObject.GetComponent<Particle>();
-
-    //    if (particle != null)
-    //    {
-    //        RemoveInfluence(particle);
-    //    }
-    //}
-
 }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Assets
 {
     public class GameManager : Singleton<GameManager>
     {
         /// <summary>
-        /// Caching purpose
+        ///     Caching purpose
         /// </summary>
         public int MaxPlayers = 5;
 
@@ -18,7 +14,7 @@ namespace Assets
 
         public void Awake()
         {
-            Players = GameObject.FindObjectsOfType<Player.Player>().ToList();
+            Players = FindObjectsOfType<Player.Player>().ToList();
         }
     }
 }

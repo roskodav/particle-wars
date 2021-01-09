@@ -1,48 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Player;
+using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-namespace Assets.Player
+public class Spawner : MonoBehaviour
 {
-    public class Spawner : MonoBehaviour
+    private static int _particleId;
+    public int CurrentCount;
+    public int MaxSpawnCount = 100;
+    public GameObject ParticleObj;
+    public Player Player;
+    public float SpawnRadius = 1;
+
+    private void Start()
     {
-        public Player Player;
-        public int MaxSpawnCount = 100;
-        public int CurrentCount = 0;
-        private static int particleID = 0;
-        public float SpawnRadius = 1;
-        public GameObject Particle;
+        InvokeRepeating(nameof(Spawning), Random.value * 0.1f, 0.005f);
 
-        void Start()
-        {
-            InvokeRepeating(nameof(Spawning), Random.value * 0.1f, 0.005f);
+        if (Player == null)
+            Player = GetComponent<Player>();
+    }
 
-            if (Player == null)
-                Player = GetComponent<Player>();
-        }
+    private void OnDrawGizmos()
+    {
+        Handles.DrawWireDisc(transform.position, Vector3.back, SpawnRadius);
+    }
 
-        private void OnDrawGizmos()
-        {
-            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, SpawnRadius);
-        }
+    private void Spawning()
+    {
+        Particle.Spawn(
+            ParticleObj, $"Particle {_particleId++}",
+            transform,
+            (Vector2) transform.position + Random.insideUnitCircle * SpawnRadius,
+            Player);
 
-        private void Spawning()
-        {
-            global::Particle.Spawn(
-                Particle, $"Particle {particleID}",
-                transform,
-                (Vector2)this.transform.position + (Random.insideUnitCircle * SpawnRadius),
-                Player);
 
-            CurrentCount++;
-            if (MaxSpawnCount <= CurrentCount)
-            {
-                CancelInvoke(nameof(Spawning));
-            }
-        }
+        CurrentCount++;
+        if (MaxSpawnCount <= CurrentCount) CancelInvoke(nameof(Spawning));
     }
 }

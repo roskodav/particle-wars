@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Player
 {
     public class PlayerControl : MonoBehaviour
     {
-        public float Radius = 4;
+        private Vector3 _lastAttractPosition = Vector3.zero;
         public Player Player;
         public float PullForce = 1500;
+        public float Radius = 4;
 
         public void ForceAttractPosition(Vector2 attractedPosition)
         {
-            foreach (Collider2D collider in Physics2D.OverlapCircleAll(transform.position, Radius))
+            foreach (var collider in Physics2D.OverlapCircleAll(attractedPosition, Radius))
             {
                 var particle = collider.GetComponent<global::Particle>();
                 if (particle != null && particle.Owner.Equals(Player))
                 {
-                    particle.SetControlled();
-                    float actualDistance = Vector2.Distance(attractedPosition, collider.transform.position);
-                    float minForceDistance = Radius;
-                    float force = (1 - Mathf.Clamp01(actualDistance / minForceDistance)) * PullForce;
-                    Vector3 forceDirection = transform.position - collider.transform.position;
+                    particle.SetControlled();  //Add influence bonus to every controlled cell
+                    var actualDistance = Vector2.Distance(attractedPosition, collider.transform.position); //Check distance between cell and mouse input
+                    var force = (1 - Mathf.Clamp01(actualDistance / Radius)) * PullForce;
+                    Vector3 forceDirection = attractedPosition - (Vector2) collider.transform.position;
+                    
+                    //Add force in mouse direction
                     collider.attachedRigidbody
-                        .AddForce(forceDirection.normalized * 
-                                  force * 
+                        .AddForce(forceDirection.normalized *
+                                  force *
                                   Time.fixedDeltaTime);
                 }
             }
+
+            //Only for Gizmo purposes
+            _lastAttractPosition = attractedPosition;
         }
 
         private void OnDrawGizmos()
         {
-            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.back, Radius);
-        }
-
-        void Update()
-        {
-            ForceAttractPosition(transform.position);
+            Handles.DrawWireDisc(_lastAttractPosition, Vector3.back, Radius);
         }
     }
 }
