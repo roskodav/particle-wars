@@ -49,8 +49,6 @@ public class MetaballParticleClass : MonoBehaviour {
 			} else {
 				delta += Time.deltaTime;
 			}
-
-
 		}
 
 	}
@@ -59,8 +57,6 @@ public class MetaballParticleClass : MonoBehaviour {
 
 	void VelocityLimiter()
 	{
-		
-		
 		Vector2 _vel = rb.velocity;
 		if (_vel.y < -8f) {
 			_vel.y = -8f;

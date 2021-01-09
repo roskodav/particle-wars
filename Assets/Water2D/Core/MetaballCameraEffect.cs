@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
-   // [ExecuteInEditMode]
+    [ExecuteInEditMode]
     public class MetaballCameraEffect : MonoBehaviour
     {
         /// Blur iterations - larger number means more blur.
         public int iterations = 3;
-
+            public int player = 0;
         /// Blur spread for each iteration. Lower values
         /// give better looking blur, but require more iterations to
         /// get large blurs. Value is usually between 0.5 and 1.0.

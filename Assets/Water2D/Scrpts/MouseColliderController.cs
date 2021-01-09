@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MouseColliderController : MonoBehaviour
 {
-	CircleCollider2D col;
+    Collider2D col;
     void Start()
     {
-		col = GetComponent<CircleCollider2D> ();
+		col = GetComponent<Collider2D> ();
     }
 
     // Update is called once per frame

@@ -19,15 +19,12 @@
 	}
 
 	public class Water2D_Spawner : MonoBehaviour
-	{
-
-		public static Water2D_Spawner instance;
+    {
+        public int maxCount = 100;
+	//	public static Water2D_Spawner instance;
 
 		void Awake()
 		{
-			if(instance == null)
-				instance = this;
-
 		}
 
 		[Title("Water 2D", 20f, 20)]
@@ -86,29 +83,29 @@
         [Header("Runtime actions")]
 
         [ButtonAttribute("Start!", "Water2D.Water2D_Spawner", "RunSpawner")]public bool btn_0;
-		static void RunSpawner()
+		 void RunSpawner()
 		{
-            instance.Spawn();
+            Spawn();
 
         }
 
         [ButtonAttribute("Stop", "Water2D.Water2D_Spawner", "JustStopSpawner")] public bool btn_1;
-        static void JustStopSpawner()
+         void JustStopSpawner()
         {
-            instance._breakLoop = true;
+            _breakLoop = true;
 
         }
         [ButtonAttribute("Stop and restore", "Water2D.Water2D_Spawner", "StopSpawner")] public bool btn_2;
-        static void StopSpawner()
+         void StopSpawner()
         {
-            instance.Restore();
+            Restore();
 
         }
 
         [Separator()]
 
         [ButtonAttribute("Help?", "Water2D.Water2D_Spawner", "askHelp")] public bool btn;
-        static void askHelp()
+         void askHelp()
         {
             string email = "info@2ddlpro.com";
             string subject = "Water 2D Help!";
@@ -132,7 +129,7 @@
 		public bool IsWaterInScene{ get; private set;}
 
 		int usableDropsCount;
-		int DefaultCount;
+		public int DefaultCount;
 
 
 		// MICRO SPWNS
@@ -176,7 +173,7 @@
 			microSpawns = new List<microSpawn>(5); // Up to 5 microspwawn
 
 
-            instance.Spawn();
+            Spawn();
         }
 
 		public void RunMicroSpawn(Vector3 pos, int amount, Vector2 initVel)
@@ -381,8 +378,17 @@
 
         public void SetWaterColor(Color fill, Color stroke)
 		{
+			int num = Random.Range(0,50);
+			
+		//	if(num == 1){
+			//	Debug.Log("1");
 			WaterMaterial.SetColor ("_Color", fill);
 			WaterMaterial.SetColor ("_StrokeColor", stroke);
+	//		}else{
+//Debug.Log("2");
+//				WaterMaterial.SetColor ("_Color", new Color(0f,112/155f,6f));
+//				WaterMaterial.SetColor ("_StrokeColor", new Color(8/255f,156/255f,1f));
+//			}
 		}
 	}
 
