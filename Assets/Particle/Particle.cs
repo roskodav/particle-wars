@@ -76,8 +76,8 @@ public class Particle : MonoBehaviour
     {
         //Cache max possible player
         PlayersInfluence = new Dictionary<int, PlayerInfluence>(GameManager.Instance.MaxPlayers);
-        InvokeRepeating(nameof(HealingUpdate), 1f, 1f);
-        InvokeRepeating(nameof(ApplyInfluence), 1f, 1f);
+        InvokeRepeating(nameof(HealingUpdate), Random.value, 1f);
+        InvokeRepeating(nameof(ApplyInfluence), Random.value, 1f);
         InvokeRepeating(nameof(CheckInfluence), Random.value, 0.5f);
 
         if (Owner != null)
@@ -118,7 +118,7 @@ public class Particle : MonoBehaviour
     {
         var totalInfluence = PlayersInfluence
             .Sum(p =>
-                p.Value.Player.Equals(Owner) ? -p.Value.Influence : +p.Value.Influence);
+                p.Value.Player.Equals(Owner) ? +p.Value.Influence : -p.Value.Influence);
 
         Life += totalInfluence;
         Life = Mathf.Clamp(Life, 0, MaxLife);
