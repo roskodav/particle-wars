@@ -7,6 +7,20 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
+    [Tooltip("The Ui Panel to let the user enter name, connect and play")]
+    [SerializeField]
+    private GameObject controlPanel;
+    [Tooltip("The UI Label to inform the user that the connection is in progress")]
+    [SerializeField]
+    private GameObject progressLabel;
+
+    /// <summary>
+    /// Keep track of the current process. Since connection is asynchronous and is based on several callbacks from Photon,
+    /// we need to keep track of this to properly adjust the behavior when we receive call back by Photon.
+    /// Typically this is used for the OnConnectedToMaster() callback.
+    /// </summary>
+    bool isConnecting;
+
     void Awake()
     {
         // #Critical
@@ -16,7 +30,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        Connect();
+        progressLabel.SetActive(false);
+        controlPanel.SetActive(true);
     }
 
     /// <summary>
@@ -26,6 +41,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     /// </summary>
     public void Connect()
     {
+        progressLabel.SetActive(true);
+        controlPanel.SetActive(false);
         // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
         if (PhotonNetwork.IsConnected)
         {
@@ -35,7 +52,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         else
         {
             // #Critical, we must first and foremost connect to Photon Online Server.
-            PhotonNetwork.ConnectUsingSettings();
+            isConnecting = PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = GameManager.Instance.GameVersion;
         }
     }
@@ -43,11 +60,23 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log($"PUN {nameof(Launcher)}:OnConnectedToMaster() was called by PUN");
-        PhotonNetwork.JoinRandomRoom();
+
+        // we don't want to do anything if we are not attempting to join a room.
+        // this case where isConnecting is false is typically when you lost or quit the game, when this level is loaded, OnConnectedToMaster will be called, in that case
+        // we don't want to do anything.
+        if (isConnecting)
+        {
+            // #Critical: The first we try to do is to join a potential existing room. If there is, good, else, we'll be called back with OnJoinRandomFailed()
+            PhotonNetwork.JoinRandomRoom();
+            isConnecting = false;
+        }
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
+        isConnecting = false;
+        progressLabel.SetActive(false);
+        controlPanel.SetActive(true);
         Debug.LogWarningFormat($"PUN {nameof(Launcher)}:OnDisconnected() was called by PUN with reason {0}", cause);
     }
 
@@ -62,5 +91,15 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"PUN {nameof(Launcher)}:OnJoinedRoom() called by PUN. Now this client is in a room.");
+        // #Critical: We only load if we are the first player, else we rely on `PhotonNetwork.AutomaticallySyncScene` to sync our instance scene.
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        {
+            Debug.Log("We load the 'Room for 1' ");
+
+
+            // #Critical
+            // Load the Room Level.
+            PhotonNetwork.LoadLevel("Room for 1");
+        }
     }
 }
