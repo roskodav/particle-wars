@@ -1,33 +1,45 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
+using UnityEngine;
 
 namespace Assets.Player
 {
-    public class Player : MonoBehaviour
+    public class Player : MonoBehaviourPunCallbacks
     {
         public Color Color;
         public int ID;
 
-        [SerializeField] private bool isLocalPlayer;
         public GameObject PlayerControl;
 
         public string PlayerName;
 
-        public bool IsLocalPlayer
+        void Awake()
         {
-            //TODO for multiplayer
-            get => isLocalPlayer;
-            set => isLocalPlayer = value;
+            if (photonView.IsMine)
+            {
+                PlayerManager.LocalPlayerInstance = this.gameObject;
+            }
         }
 
         private void Start()
         {
-            name = $"Player {PlayerName}";
-            var playerControl = Instantiate(PlayerControl, transform);
-            playerControl.GetComponent<PlayerControl>().Player = this;
-            if (isLocalPlayer)
-                playerControl.gameObject.AddComponent<LocalPlayerControl>();
+            GameManager.Instance.AddPlayer(this);
+
+            if (photonView.IsMine)
+                Color = GameManager.Instance.LocalPlayerColor;
             else
-                playerControl.gameObject.AddComponent<RemotePlayerControl>();
+                Color = GameManager.Instance.RemotePlayerColor;
+
+            if (photonView.IsMine)
+            {
+                name = $"Player {PlayerName}";
+                var playerControl = Instantiate(PlayerControl, transform);
+                playerControl.GetComponent<PlayerControl>().Player = this;
+                if (photonView.IsMine)
+                    playerControl.gameObject.AddComponent<LocalPlayerControl>();
+                else
+                    playerControl.gameObject.AddComponent<RemotePlayerControl>();
+            }
         }
 
         public override bool Equals(object obj)

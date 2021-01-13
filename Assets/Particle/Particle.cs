@@ -3,10 +3,11 @@ using System.Linq;
 using Assets;
 using Assets.Particle;
 using Assets.Player;
+using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
 
-public class Particle : MonoBehaviour
+public class Particle : MonoBehaviourPunCallbacks
 {
     private float _currentControledTime;
     public float ControledInfluenceBonus = 1.2f;
@@ -26,7 +27,18 @@ public class Particle : MonoBehaviour
 
     public float InfluenceRadius = 1;
     public bool IsControlledByMouse;
-    public float Life = 100;
+
+    public float _life = 100; //Onlu network owner can update own life
+    public float Life
+    {
+        get { return _life; }
+        set
+        {
+            if (photonView.IsMine)
+                _life = value;
+        }
+    }
+
     public float MaxLife = 100;
 
     public Player Owner;
@@ -48,19 +60,27 @@ public class Particle : MonoBehaviour
         _currentControledTime = 0;
     }
 
-    public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner)
+    public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner,
+        bool localhostDebug)
     {
-        var particle = Instantiate(particlePrefab, position, new Quaternion(0, 0, 0, 0));
+        GameObject particle;
+        if (localhostDebug)
+            particle = Instantiate(particlePrefab, position, new Quaternion(0, 0, 0, 0));
+        else
+            particle = PhotonNetwork.Instantiate(particlePrefab.name, position, new Quaternion(0, 0, 0, 0));
+
         particle.transform.parent = parent;
         var particleComponent = particle.GetComponent<Particle>();
         particleComponent.Owner = owner;
         particle.name = name;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Handles.DrawWireDisc(transform.position, Vector3.back, InfluenceRadius);
     }
+#endif
 
     private void Update()
     {
@@ -80,8 +100,16 @@ public class Particle : MonoBehaviour
         InvokeRepeating(nameof(ApplyInfluence), Random.value, 1f);
         InvokeRepeating(nameof(CheckInfluence), Random.value, 0.5f);
 
-        if (Owner != null)
-            ChangePlayer(Owner);
+        if (!photonView.IsMine)
+        {
+            var playerOwnerObj = GameManager.Instance.Players.FirstOrDefault(p => p.photonView.Owner == photonView.Owner);
+            ChangePlayer(playerOwnerObj);
+        }
+        else
+        {
+            if (Owner != null)
+                ChangePlayer(Owner);
+        }
 
         foreach (var player in GameManager.Instance.Players)
             PlayersInfluence[player.ID] = new PlayerInfluence
@@ -103,12 +131,28 @@ public class Particle : MonoBehaviour
     {
         Owner = targetPlayer;
         Life = MaxLife / 2;
+        this.transform.parent = targetPlayer.transform;
+
+        if (photonView.Owner != targetPlayer.photonView.Owner)
+            OnNetworkOwnershipRequest(targetPlayer);
+    }
+
+    public void OnNetworkOwnershipRequest(Player targetPlayer)
+    {
+        var viewOponent = targetPlayer.GetComponent<PhotonView>().Owner;
+        photonView.TransferOwnership(viewOponent);
     }
 
     private void AddInfluence(Particle enemyParticle)
     {
         if (enemyParticle.Owner == null)
             return;
+
+        if(!PlayersInfluence.ContainsKey(enemyParticle.Owner.ID))
+            PlayersInfluence[enemyParticle.Owner.ID] = new PlayerInfluence
+            {
+                Player = enemyParticle.Owner
+            };
 
         //Add influce bonus if controlled
         PlayersInfluence[enemyParticle.Owner.ID].AddInfluence(enemyParticle.CurrentInfluencePower);
@@ -143,7 +187,8 @@ public class Particle : MonoBehaviour
         foreach (var coll in Physics2D.OverlapCircleAll(transform.position, InfluenceRadius))
         {
             var particle = coll.gameObject.GetComponent<Particle>();
-            if (particle != null) AddInfluence(particle);
+            if (particle != null)
+                AddInfluence(particle);
         }
     }
 }

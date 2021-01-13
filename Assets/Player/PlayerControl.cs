@@ -15,7 +15,7 @@ namespace Assets.Player
             foreach (var collider in Physics2D.OverlapCircleAll(attractedPosition, Radius))
             {
                 var particle = collider.GetComponent<global::Particle>();
-                if (particle != null && particle.Owner.Equals(Player))
+                if (particle != null && particle.Owner != null && particle.photonView.IsMine)
                 {
                     particle.SetControlled(); //Add influence bonus to every controlled cell
                     var actualDistance =
@@ -36,9 +36,11 @@ namespace Assets.Player
             _lastAttractPosition = attractedPosition;
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             Handles.DrawWireDisc(_lastAttractPosition, Vector3.back, Radius);
         }
+#endif
     }
 }

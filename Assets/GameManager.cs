@@ -12,11 +12,21 @@ namespace Assets
         [SerializeField]
         public byte MaxPlayers = 2;
 
+        public Color LocalPlayerColor = Color.blue;
+        public Color RemotePlayerColor = Color.red;
         public List<Player.Player> Players;
 
-        public void Awake()
+
+        void Start()
         {
-            Players = FindObjectsOfType<Player.Player>().ToList();
+            DontDestroyOnLoad(gameObject);
+        }
+
+        public void AddPlayer(Player.Player player)
+        {
+            if(Players == null)
+                Players = new List<Player.Player>();
+            Players.Add(player);
         }
 
         /// <summary>

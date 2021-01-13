@@ -1,8 +1,9 @@
 ﻿using Assets.Player;
+using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class Spawner : MonoBehaviourPunCallbacks
 {
     private static int _particleId;
     public int CurrentCount;
@@ -10,6 +11,7 @@ public class Spawner : MonoBehaviour
     public GameObject ParticleObj;
     public Player Player;
     public float SpawnRadius = 1;
+    public bool LocalDebug = false;
 
     private void Start()
     {
@@ -18,22 +20,30 @@ public class Spawner : MonoBehaviour
         if (Player == null)
             Player = GetComponent<Player>();
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Handles.DrawWireDisc(transform.position, Vector3.back, SpawnRadius);
     }
+#endif
 
     private void Spawning()
     {
-        Particle.Spawn(
-            ParticleObj, $"Particle {_particleId++}",
-            transform,
-            (Vector2) transform.position + Random.insideUnitCircle * SpawnRadius,
-            Player);
+        if (photonView.IsMine || LocalDebug)
+        {
+            Particle.Spawn(
+                ParticleObj,
+                $"Particle {_particleId++}",
+                transform,
+                (Vector2) transform.position + Random.insideUnitCircle * SpawnRadius,
+                Player, LocalDebug);
 
-
-        CurrentCount++;
-        if (MaxSpawnCount <= CurrentCount) CancelInvoke(nameof(Spawning));
+            CurrentCount++;
+            if (MaxSpawnCount <= CurrentCount) CancelInvoke(nameof(Spawning));
+        }
+        else
+        {
+            CancelInvoke(nameof(Spawning));
+        }
     }
 }
