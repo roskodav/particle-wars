@@ -10,6 +10,8 @@ using UnityEngine;
 public class Particle : MonoBehaviourPunCallbacks
 {
     private float _currentControledTime;
+
+    public float _life = 100; //Onlu network owner can update own life
     public float ControledInfluenceBonus = 1.2f;
     public float ControledInfluenceBonusLifeTime = 0.5f;
 
@@ -28,17 +30,6 @@ public class Particle : MonoBehaviourPunCallbacks
     public float InfluenceRadius = 1;
     public bool IsControlledByMouse;
 
-    public float _life = 100; //Onlu network owner can update own life
-    public float Life
-    {
-        get { return _life; }
-        set
-        {
-            if (photonView.IsMine)
-                _life = value;
-        }
-    }
-
     public float MaxLife = 100;
 
     public Player Owner;
@@ -47,6 +38,16 @@ public class Particle : MonoBehaviourPunCallbacks
     ///     Used for counting witch player have most influence on this particle
     /// </summary>
     public Dictionary<int, PlayerInfluence> PlayersInfluence;
+
+    public float Life
+    {
+        get => _life;
+        set
+        {
+            if (photonView.IsMine)
+                _life = value;
+        }
+    }
 
     public void SetControlled()
     {
@@ -102,7 +103,8 @@ public class Particle : MonoBehaviourPunCallbacks
 
         if (!photonView.IsMine)
         {
-            var playerOwnerObj = GameManager.Instance.Players.FirstOrDefault(p => p.photonView.Owner == photonView.Owner);
+            var playerOwnerObj =
+                GameManager.Instance.Players.FirstOrDefault(p => p.photonView.Owner == photonView.Owner);
             ChangePlayer(playerOwnerObj);
         }
         else
@@ -131,7 +133,7 @@ public class Particle : MonoBehaviourPunCallbacks
     {
         Owner = targetPlayer;
         Life = MaxLife / 2;
-        this.transform.parent = targetPlayer.transform;
+        transform.parent = targetPlayer.transform;
 
         if (photonView.Owner != targetPlayer.photonView.Owner)
             OnNetworkOwnershipRequest(targetPlayer);
@@ -148,7 +150,7 @@ public class Particle : MonoBehaviourPunCallbacks
         if (enemyParticle.Owner == null)
             return;
 
-        if(!PlayersInfluence.ContainsKey(enemyParticle.Owner.ID))
+        if (!PlayersInfluence.ContainsKey(enemyParticle.Owner.ID))
             PlayersInfluence[enemyParticle.Owner.ID] = new PlayerInfluence
             {
                 Player = enemyParticle.Owner

@@ -7,11 +7,11 @@ public class Spawner : MonoBehaviourPunCallbacks
 {
     private static int _particleId;
     public int CurrentCount;
+    public bool LocalDebug = false;
     public int MaxSpawnCount = 100;
     public GameObject ParticleObj;
     public Player Player;
     public float SpawnRadius = 1;
-    public bool LocalDebug = false;
 
     private void Start()
     {

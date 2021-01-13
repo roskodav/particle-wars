@@ -1,43 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets;
+﻿using Assets;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
-    [Tooltip("The Ui Panel to let the user enter name, connect and play")]
-    [SerializeField]
+    [Tooltip("The Ui Panel to let the user enter name, connect and play")] [SerializeField]
     private GameObject controlPanel;
-    [Tooltip("The UI Label to inform the user that the connection is in progress")]
-    [SerializeField]
-    private GameObject progressLabel;
 
     /// <summary>
-    /// Keep track of the current process. Since connection is asynchronous and is based on several callbacks from Photon,
-    /// we need to keep track of this to properly adjust the behavior when we receive call back by Photon.
-    /// Typically this is used for the OnConnectedToMaster() callback.
+    ///     Keep track of the current process. Since connection is asynchronous and is based on several callbacks from Photon,
+    ///     we need to keep track of this to properly adjust the behavior when we receive call back by Photon.
+    ///     Typically this is used for the OnConnectedToMaster() callback.
     /// </summary>
-    bool isConnecting;
+    private bool isConnecting;
 
-    void Awake()
+    [Tooltip("The UI Label to inform the user that the connection is in progress")] [SerializeField]
+    private GameObject progressLabel;
+
+    private void Awake()
     {
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
-    void Start()
+    private void Start()
     {
         progressLabel.SetActive(false);
         controlPanel.SetActive(true);
     }
 
     /// <summary>
-    /// Start the connection process.
-    /// - If already connected, we attempt joining a random room
-    /// - if not yet connected, Connect this application instance to Photon Cloud Network
+    ///     Start the connection process.
+    ///     - If already connected, we attempt joining a random room
+    ///     - if not yet connected, Connect this application instance to Photon Cloud Network
     /// </summary>
     public void Connect()
     {
@@ -82,10 +79,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        Debug.Log("PUN {nameof(Launcher)}:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+        Debug.Log(
+            "PUN {nameof(Launcher)}:OnJoinRandomFailed() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
 
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = GameManager.Instance.MaxPlayers });
+        PhotonNetwork.CreateRoom(null, new RoomOptions {MaxPlayers = GameManager.Instance.MaxPlayers});
     }
 
     public override void OnJoinedRoom()

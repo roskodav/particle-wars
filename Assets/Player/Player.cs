@@ -13,12 +13,9 @@ namespace Assets.Player
 
         public string PlayerName;
 
-        void Awake()
+        private void Awake()
         {
-            if (photonView.IsMine)
-            {
-                PlayerManager.LocalPlayerInstance = this.gameObject;
-            }
+            if (photonView.IsMine) PlayerManager.LocalPlayerInstance = gameObject;
         }
 
         private void Start()
@@ -51,7 +48,7 @@ namespace Assets.Player
 
         public override int GetHashCode()
         {
-            return this.ID.GetHashCode();
+            return ID.GetHashCode();
         }
     }
 }
