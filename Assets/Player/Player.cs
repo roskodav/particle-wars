@@ -10,7 +10,7 @@ namespace Assets.Player
         public int ID;
 
         public GameObject PlayerControl;
-
+        private static int CurrentPlayerId = 0;
         public string PlayerName;
 
         private void Awake()
@@ -37,6 +37,9 @@ namespace Assets.Player
                 else
                     playerControl.gameObject.AddComponent<RemotePlayerControl>();
             }
+
+            ID = CurrentPlayerId;
+            CurrentPlayerId++;
         }
 
         public override bool Equals(object obj)

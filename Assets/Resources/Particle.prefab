@@ -15,9 +15,10 @@ GameObject:
   - component: {fileID: 6408878791819607639}
   - component: {fileID: 6358557468758679641}
   - component: {fileID: 6359916122614213173}
-  - component: {fileID: 6459964000972105803}
   - component: {fileID: 2629837751932708127}
   - component: {fileID: -4591802536726786722}
+  - component: {fileID: 1665691493557068957}
+  - component: {fileID: 4139602229893803939}
   m_Layer: 8
   m_Name: Particle
   m_TagString: Metaball_liquid
@@ -33,7 +34,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6408878791832531461}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.37, y: -2.92, z: 0}
+  m_LocalPosition: {x: 2.87, y: -4.99, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -51,14 +52,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb0079cff69e374a83b1f114ba35716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ControledInfluenceBonus: 1.9
-  ControledInfluenceBonusLifeTime: 0.5
-  CurrentInfluencePower: 0
-  DefaultInfluencePower: 1
-  HealingSpeed: 1
-  InfluenceRadius: 1
-  IsControlledByMouse: 0
   _life: 100
+  ControledInfluenceBonus: 7.97
+  ControledInfluenceBonusLifeTime: 0.68
+  CurrentInfluencePower: 0
+  DefaultInfluencePower: 82.3
+  HealingSpeed: 0.6
+  InfluenceRadius: 0.24
+  IsControlledByMouse: 0
   MaxLife: 100
   Owner: {fileID: 0}
 --- !u!114 &-5466389931689932306
@@ -77,11 +78,12 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   observableSearch: 2
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 1
   ObservedComponents:
   - {fileID: 6375970299852186001}
   - {fileID: -4591802536726786722}
+  - {fileID: 4139602229893803939}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -189,7 +191,35 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!96 &6459964000972105803
+--- !u!114 &2629837751932708127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6408878791832531461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ac179998fe26a940b436276f4b4258e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-4591802536726786722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6408878791832531461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
+--- !u!96 &1665691493557068957
 TrailRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
@@ -198,9 +228,9 @@ TrailRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6408878791832531461}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
@@ -209,7 +239,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -221,7 +251,7 @@ TrailRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
+  m_StitchLightmapSeams: 1
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -230,16 +260,16 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.1
+  m_Time: 0.17
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.24
+    widthMultiplier: 1
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.0028152466
-        value: 0.48101234
+        time: 0
+        value: 0.12857294
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -247,17 +277,17 @@ TrailRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.99192387
+        time: 1
         value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
-      m_RotationOrder: 0
+      m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 1}
@@ -293,10 +323,10 @@ TrailRenderer:
     textureMode: 0
     shadowBias: 0
     generateLightingData: 0
-  m_MinVertexDistance: 0.0001
+  m_MinVertexDistance: 0.15
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!114 &2629837751932708127
+--- !u!114 &4139602229893803939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -305,22 +335,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 6408878791832531461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ac179998fe26a940b436276f4b4258e, type: 3}
+  m_Script: {fileID: 11500000, guid: 8069ffa6ab7df7340ad5ce0c3da47526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-4591802536726786722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408878791832531461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
-  m_TeleportIfDistanceGreaterThan: 3
+  interpolationBackTime: 0.12
+  extrapolationMode: 1
+  useExtrapolationTimeLimit: 1
+  extrapolationTimeLimit: 5
+  useExtrapolationDistanceLimit: 0
+  extrapolationDistanceLimit: 20
+  sendPositionThreshold: 0
+  sendRotationThreshold: 0
+  sendScaleThreshold: 0
+  sendVelocityThreshold: 0
+  sendAngularVelocityThreshold: 0
+  receivedPositionThreshold: 0
+  receivedRotationThreshold: 0
+  snapPositionThreshold: 0
+  snapRotationThreshold: 0
+  snapScaleThreshold: 0
+  positionLerpSpeed: 0.85
+  rotationLerpSpeed: 0.85
+  scaleLerpSpeed: 0.85
+  timeCorrectionSpeed: 0.1
+  snapTimeThreshold: 0.3
+  syncPosition: 0
+  syncRotation: 0
+  syncScale: 0
+  syncVelocity: 0
+  syncAngularVelocity: 0
+  isPositionCompressed: 1
+  isRotationCompressed: 0
+  isScaleCompressed: 0
+  isVelocityCompressed: 0
+  isAngularVelocityCompressed: 0
+  automaticallyResetTime: 1
+  whenToUpdateTransform: 1
+  childObjectToSync: {fileID: 0}
+  setVelocityInsteadOfPositionOnNonOwners: 0
+  useLocalTransformOnly: 0
+  maxPositionDifferenceForVelocitySyncing: 10
+  receivedStatesCounter: 0

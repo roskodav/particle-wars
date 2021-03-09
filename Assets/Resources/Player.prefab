@@ -62,11 +62,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentCount: 0
+  LocalDebug: 0
   MaxSpawnCount: 100
   ParticleObj: {fileID: 6408878791832531461, guid: c9faa5c78769fb04bbdcb186317913cc, type: 3}
   Player: {fileID: 5241050023410378536}
   SpawnRadius: 1
-  LocalDebug: 0
 --- !u!114 &-3201794787946540061
 MonoBehaviour:
   m_ObjectHideFlags: 0

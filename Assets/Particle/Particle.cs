@@ -103,6 +103,7 @@ public class Particle : MonoBehaviourPunCallbacks
 
         if (!photonView.IsMine)
         {
+            GameManager.Instance.Players.RemoveAll(p => p == null);
             var playerOwnerObj =
                 GameManager.Instance.Players.FirstOrDefault(p => p.photonView.Owner == photonView.Owner);
             ChangePlayer(playerOwnerObj);
