@@ -4,8 +4,10 @@ using Assets;
 using Assets.Particle;
 using Assets.Player;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEditor;
 using UnityEngine;
+using Player = Photon.Realtime.Player;
 
 public class Particle : MonoBehaviourPunCallbacks
 {
@@ -32,7 +34,7 @@ public class Particle : MonoBehaviourPunCallbacks
 
     public float MaxLife = 100;
 
-    public Player Owner;
+    public Assets.Player.Player Owner;
 
     /// <summary>
     ///     Used for counting witch player have most influence on this particle
@@ -61,7 +63,12 @@ public class Particle : MonoBehaviourPunCallbacks
         _currentControledTime = 0;
     }
 
-    public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Player owner,
+    //private void Awake()
+    //{
+    //    PhotonNetwork.AddCallbackTarget(this);
+    //}
+
+    public static void Spawn(GameObject particlePrefab, string name, Transform parent, Vector2 position, Assets.Player.Player owner,
         bool localhostDebug)
     {
         GameObject particle;
@@ -130,20 +137,34 @@ public class Particle : MonoBehaviourPunCallbacks
             Life += HealingSpeed;
     }
 
-    private void ChangePlayer(Player targetPlayer)
+    [PunRPC]
+    private void OnRemotePlayerChanged(PhotonMessageInfo info)
+    {
+        ChangePlayer(GameManager.Instance.GetPlayer(info.photonView), true);
+    }
+
+    private void ChangePlayer(Assets.Player.Player targetPlayer, bool ignoreRemote = false)
     {
         Owner = targetPlayer;
         Life = MaxLife / 2;
         transform.parent = targetPlayer.transform;
 
-        if (photonView.Owner != targetPlayer.photonView.Owner)
-            OnNetworkOwnershipRequest(targetPlayer);
+        if (photonView.Owner != targetPlayer.photonView.Owner && !ignoreRemote) // Change remote player
+        {
+            var viewOponent = targetPlayer.GetComponent<PhotonView>().Owner;
+            photonView.TransferOwnership(viewOponent);
+            photonView.RPC(nameof(OnRemotePlayerChanged), RpcTarget.Others);
+        }
     }
 
-    public void OnNetworkOwnershipRequest(Player targetPlayer)
+    private void OnDestroy()
     {
-        var viewOponent = targetPlayer.GetComponent<PhotonView>().Owner;
-        photonView.TransferOwnership(viewOponent);
+       // PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer)
+    {
+        throw new System.NotImplementedException();
     }
 
     private void AddInfluence(Particle enemyParticle)

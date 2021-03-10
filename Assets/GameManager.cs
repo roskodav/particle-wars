@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Photon.Pun;
 using UnityEngine;
 
 namespace Assets
@@ -25,6 +27,18 @@ namespace Assets
         private void Start()
         {
             DontDestroyOnLoad(gameObject);
+        }
+
+        public Player.Player GetPlayer(PhotonView photonView)
+        {
+            var selected = Players.FirstOrDefault(p => p.photonView.Owner == photonView.Owner);
+            return selected;
+        }
+
+        public Player.Player GetPlayer(int id)
+        {
+            var selected = Players.FirstOrDefault(p => p.ID == id);
+            return selected;
         }
 
         public void AddPlayer(Player.Player player)
